@@ -17,14 +17,17 @@ Look for these log messages:
 
 ### 2. Verify Plugin Registration
 
+**Note:** This plugin uses automatic registration. You should NOT manually register it.
+
 **Android:**
-- Check `MainActivity.kt` has plugin registration
-- Verify `AttachmentPickerPlugin` is imported
-- Check that `configureFlutterEngine` is called
+- The plugin is automatically registered by Flutter
+- No manual `MainActivity.kt` changes needed
+- If you see "Activity is null" errors, ensure `flutter pub get` was run and the app was rebuilt
 
 **iOS:**
-- Check `AppDelegate.swift` has plugin registration
-- Verify `AttachmentPickerPlugin.register` is called
+- The plugin is automatically registered by Flutter
+- No manual `AppDelegate.swift` changes needed
+- Ensure `flutter pub get` was run and the app was rebuilt
 
 ### 3. Check Permissions
 
@@ -47,9 +50,9 @@ Look for these log messages:
 ### 5. Common Issues
 
 **Issue: "Activity is null"**
-- Plugin not properly registered
+- Plugin may not be properly registered (should be automatic)
 - ActivityAware lifecycle not working
-- Solution: Check MainActivity registration
+- Solution: Run `flutter clean`, `flutter pub get`, and rebuild the app
 
 **Issue: Permission denied immediately**
 - Permission already denied in system settings

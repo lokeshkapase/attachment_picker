@@ -7,10 +7,6 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    if let controller = window?.rootViewController as? FlutterViewController {
-      AttachmentPickerPlugin.register(with: self.registrar(forPlugin: "AttachmentPickerPlugin")!)
-    }
-    
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

@@ -16,4 +16,10 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter:
-  uses-material-design: true
+  plugin:
+    platforms:
+      android:
+        package: com.example.attachment_picker
+        pluginClass: AttachmentPickerPlugin
+      ios:
+        pluginClass: AttachmentPickerPlugin

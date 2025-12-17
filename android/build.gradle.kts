@@ -1,21 +1,42 @@
-allprojects {
+group = "com.example"
+version = "1.0-SNAPSHOT"
+
+buildscript {
     repositories {
         google()
         mavenCentral()
     }
 }
 
-val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
-rootProject.layout.buildDirectory.value(newBuildDir)
-
-subprojects {
-    val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
-    project.layout.buildDirectory.value(newSubprojectBuildDir)
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
+android {
+    namespace = "com.example.attachment_picker"
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    defaultConfig {
+        minSdk = 21
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
 }
