@@ -78,11 +78,8 @@ class _AttachmentPickerBottomSheetState
   }
 
   Future<void> _handleGallery() async {
-    print('_AttachmentPickerBottomSheet: Gallery button tapped');
     Navigator.pop(context);
-    print('_AttachmentPickerBottomSheet: Bottom sheet closed, calling gallery picker');
     final attachment = await _galleryPicker.pickImage();
-    print('_AttachmentPickerBottomSheet: Gallery picker returned: $attachment');
     if (attachment != null && mounted) {
       Navigator.pop(context, attachment);
     }

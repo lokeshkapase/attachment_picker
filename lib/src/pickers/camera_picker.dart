@@ -7,12 +7,9 @@ class CameraPicker {
   /// Returns null if user cancels or permission is denied
   Future<Attachment?> pickImage() async {
     try {
-      print('CameraPicker: Starting camera pick');
       final result = await AttachmentPickerPlatform.pickCameraImage();
-      print('CameraPicker: Got result: $result');
-      
+
       if (result == null) {
-        print('CameraPicker: Result is null');
         return null;
       }
 
@@ -23,7 +20,6 @@ class CameraPicker {
         mimeType: result['mimeType'] as String?,
       );
     } catch (e) {
-      print('CameraPicker: Exception: $e');
       return null;
     }
   }

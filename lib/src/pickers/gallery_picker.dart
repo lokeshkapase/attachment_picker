@@ -7,12 +7,9 @@ class GalleryPicker {
   /// Returns null if user cancels or permission is denied
   Future<Attachment?> pickImage() async {
     try {
-      print('GalleryPicker: Starting gallery pick');
       final result = await AttachmentPickerPlatform.pickGalleryImage();
-      print('GalleryPicker: Got result: $result');
-      
+
       if (result == null) {
-        print('GalleryPicker: Result is null');
         return null;
       }
 
@@ -23,7 +20,6 @@ class GalleryPicker {
         mimeType: result['mimeType'] as String?,
       );
     } catch (e) {
-      print('GalleryPicker: Exception: $e');
       return null;
     }
   }

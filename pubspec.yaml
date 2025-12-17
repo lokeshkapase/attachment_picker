@@ -1,7 +1,7 @@
 name: flutter_unified_attachment_picker
 description: A unified Flutter package for picking attachments including camera, gallery, documents, and audio recording. Perfect for chat apps, diary apps, and LMS apps.
 version: 1.0.0
-homepage: https://github.com/yourusername/flutter_unified_attachment_picker
+homepage: https://github.com/lokeshkapase/attachment_picker
 
 environment:
   sdk: ^3.7.2
