@@ -43,9 +43,19 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (attachment != null) {
+      // Log the selected file path and details to the console for quick verification.
+      debugPrint('=== Attachment Selected ===');
+      debugPrint('File Path: ${attachment.filePath}');
+      debugPrint('File Name: ${attachment.fileName}');
+      debugPrint('File Size: ${attachment.fileSize} bytes');
+      debugPrint('MIME Type: ${attachment.mimeType}');
+      debugPrint('Attachment Type: ${attachment.type.name}');
+      debugPrint('===========================');
       setState(() {
         _selectedAttachment = attachment;
       });
+    } else {
+      debugPrint('No attachment selected (user cancelled)');
     }
   }
 
@@ -70,6 +80,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         const SizedBox(height: 16),
+        if (_selectedAttachment!.filePath != null)
+          Text('File Path: ${_selectedAttachment!.filePath}'),
         if (_selectedAttachment!.fileName != null)
           Text('File Name: ${_selectedAttachment!.fileName}'),
         if (_selectedAttachment!.fileSize != null)

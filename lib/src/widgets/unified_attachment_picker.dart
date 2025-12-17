@@ -70,35 +70,39 @@ class _AttachmentPickerBottomSheetState
   final AudioPicker _audioPicker = AudioPicker();
 
   Future<void> _handleCamera() async {
-    Navigator.pop(context);
+    if (!mounted) return;
+    // Don't pop immediately - wait for result then pop with the value
     final attachment = await _cameraPicker.pickImage();
-    if (attachment != null && mounted) {
+    if (mounted) {
       Navigator.pop(context, attachment);
     }
   }
 
   Future<void> _handleGallery() async {
-    Navigator.pop(context);
+    if (!mounted) return;
+    // Don't pop immediately - wait for result then pop with the value
     final attachment = await _galleryPicker.pickImage();
-    if (attachment != null && mounted) {
+    if (mounted) {
       Navigator.pop(context, attachment);
     }
   }
 
   Future<void> _handleDocuments() async {
-    Navigator.pop(context);
+    if (!mounted) return;
+    // Don't pop immediately - wait for result then pop with the value
     final attachment = await _documentPicker.pickDocument(
       allowedExtensions: widget.allowedDocumentExtensions,
     );
-    if (attachment != null && mounted) {
+    if (mounted) {
       Navigator.pop(context, attachment);
     }
   }
 
   Future<void> _handleAudio() async {
-    Navigator.pop(context);
+    if (!mounted) return;
+    // Don't pop immediately - wait for result then pop with the value
     final attachment = await _audioPicker.pickAudioFile();
-    if (attachment != null && mounted) {
+    if (mounted) {
       Navigator.pop(context, attachment);
     }
   }
