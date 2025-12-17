@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 /// Attachment type enumeration
 enum AttachmentType {

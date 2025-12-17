@@ -7,7 +7,7 @@
 /// - Audio recordings
 /// 
 /// All through a unified, beautiful bottom sheet UI.
-library flutter_unified_attachment_picker;
+library;
 
 // Export models
 export 'src/models/attachment.dart';

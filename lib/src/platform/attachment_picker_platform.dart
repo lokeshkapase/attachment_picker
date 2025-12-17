@@ -19,7 +19,7 @@ class AttachmentPickerPlatform {
     try {
       final result = await _channel.invokeMethod<Map<Object?, Object?>>('pickCameraImage');
       return result?.cast<String, dynamic>();
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return null;
     } catch (e) {
       return null;
@@ -31,7 +31,7 @@ class AttachmentPickerPlatform {
     try {
       final result = await _channel.invokeMethod<Map<Object?, Object?>>('pickGalleryImage');
       return result?.cast<String, dynamic>();
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return null;
     } catch (e) {
       return null;
@@ -78,7 +78,7 @@ class AttachmentPickerPlatform {
     try {
       final result = await _channel.invokeMethod<bool>('isRecording');
       return result ?? false;
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return false;
     }
   }
@@ -91,7 +91,7 @@ class AttachmentPickerPlatform {
         {'permission': permission},
       );
       return result ?? false;
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return false;
     }
   }

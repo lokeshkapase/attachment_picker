@@ -14,7 +14,7 @@ class CameraPicker {
       }
 
       return Attachment.fromCamera(
-        filePath: result['filePath'] as String?? '',
+        filePath: result['filePath'] as String,
         fileName: result['fileName'] as String?,
         fileSize: result['fileSize'] as int?,
         mimeType: result['mimeType'] as String?,
