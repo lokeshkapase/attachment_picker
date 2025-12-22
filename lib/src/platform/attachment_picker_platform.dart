@@ -17,16 +17,12 @@ class AttachmentPickerPlatform {
 
   static Future<Map<String, dynamic>?> pickCameraImage() async {
     try {
-      print("camera");
       final result = await _channel.invokeMethod<Map<Object?, Object?>>('pickCameraImage');
-      print("result is $result");
       return result?.cast<String, dynamic>();
     } on PlatformException {
-      print("1camera");
 
       return null;
     } catch (e) {
-      print("2camera");
 
       return null;
     }
@@ -35,17 +31,12 @@ class AttachmentPickerPlatform {
   /// Pick image from gallery
   static Future<Map<String, dynamic>?> pickGalleryImage() async {
     try {
-      print('AttachmentPickerPlatform: Calling pickGalleryImage');
       final result = await _channel.invokeMethod<Map<Object?, Object?>>('pickGalleryImage');
-      print('AttachmentPickerPlatform: Received result: $result');
       final castResult = result?.cast<String, dynamic>();
-      print('AttachmentPickerPlatform: Cast result: $castResult');
       return castResult;
     } on PlatformException catch (e) {
-      print('AttachmentPickerPlatform: PlatformException in pickGalleryImage: ${e.code} - ${e.message}');
       return null;
     } catch (e) {
-      print('AttachmentPickerPlatform: Exception in pickGalleryImage: $e');
       return null;
     }
   }
