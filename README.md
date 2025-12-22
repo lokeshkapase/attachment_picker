@@ -36,14 +36,46 @@ flutter pub get
 
 ### Android
 
-Add the following permissions to `android/app/src/main/AndroidManifest.xml`:
+1. **Add permissions** to `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <application>
+        <!-- ... other application config ... -->
+        
+        <!-- FileProvider for camera images (required) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>
 ```
+
+2. **Create FileProvider paths** - Create `android/app/src/main/res/xml/file_paths.xml`:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-files-path name="my_images" path="." />
+    <external-files-path name="my_audio" path="." />
+    <external-files-path name="my_documents" path="." />
+</paths>
+```
+
+**Note:** The plugin is automatically registered - no manual MainActivity changes needed!
 
 ### iOS
 
@@ -56,7 +88,11 @@ Add the following permissions to `ios/Runner/Info.plist`:
 <string>We need access to your microphone to record audio</string>
 <key>NSPhotoLibraryUsageDescription</key>
 <string>We need access to your photo library to select images</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>We need access to save images to your photo library</string>
 ```
+
+**Note:** The plugin is automatically registered - no manual AppDelegate changes needed!
 
 ## Usage
 
@@ -180,6 +216,15 @@ This package uses **native platform implementations** via MethodChannel:
 - **iOS**: Uses native UIImagePickerController, UIDocumentPickerViewController, and AVAudioRecorder
 
 No external Flutter packages are required - everything is implemented natively for optimal performance and smaller app size.
+
+## Auto-Registration
+
+This plugin is properly structured as a Flutter plugin with **automatic registration**. You don't need to:
+- ❌ Manually register the plugin in `MainActivity.kt`
+- ❌ Manually register the plugin in `AppDelegate.swift`
+- ❌ Copy native code files to your project
+
+Just add the dependency and configure permissions - the plugin will be automatically registered by Flutter!
 
 ## Contributing
 

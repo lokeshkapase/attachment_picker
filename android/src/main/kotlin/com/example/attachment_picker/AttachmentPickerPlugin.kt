@@ -258,24 +258,35 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (pendingResult == null) return false
+        android.util.Log.d("AttachmentPicker", "onActivityResult called: requestCode=$requestCode, resultCode=$resultCode")
+        
+        if (pendingResult == null) {
+            android.util.Log.w("AttachmentPicker", "onActivityResult: pendingResult is null, returning false")
+            return false
+        }
 
         when (requestCode) {
             REQUEST_CAMERA -> {
+                android.util.Log.d("AttachmentPicker", "REQUEST_CAMERA result: resultCode=$resultCode, recordingPath=$recordingPath")
                 if (resultCode == Activity.RESULT_OK && recordingPath != null) {
                     val file = File(recordingPath!!)
                     if (file.exists()) {
                         val fileSize = file.length()
-                        pendingResult?.success(mapOf(
-                            "filePath" to recordingPath,
-                            "fileName" to file.name,
-                            "fileSize" to fileSize,
-                            "mimeType" to "image/jpeg"
-                        ))
+                    android.util.Log.d("AttachmentPicker", "Camera image captured - File Path: $recordingPath")
+                    android.util.Log.d("AttachmentPicker", "File Name: ${file.name}, Size: $fileSize bytes")
+                    
+                    pendingResult?.success(mapOf(
+                        "filePath" to recordingPath,
+                        "fileName" to file.name,
+                        "fileSize" to fileSize,
+                        "mimeType" to "image/jpeg"
+                    ))
                     } else {
+                        android.util.Log.e("AttachmentPicker", "Camera file not found at path: $recordingPath")
                         pendingResult?.error("ERROR", "Camera file not found", null)
                     }
                 } else {
+                    android.util.Log.d("AttachmentPicker", "Camera cancelled or no path: resultCode=$resultCode")
                     pendingResult?.error("CANCELLED", "User cancelled camera", null)
                 }
                 recordingPath = null
@@ -283,9 +294,12 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
                 return true
             }
             REQUEST_GALLERY -> {
+                android.util.Log.d("AttachmentPicker", "REQUEST_GALLERY result: resultCode=$resultCode, data=${data?.data}")
                 if (resultCode == Activity.RESULT_OK && data?.data != null) {
+                    android.util.Log.d("AttachmentPicker", "Gallery image selected, URI: ${data.data}")
                     handleGalleryResult(data.data!!)
                 } else {
+                    android.util.Log.d("AttachmentPicker", "Gallery cancelled or no data: resultCode=$resultCode, data=${data?.data}")
                     pendingResult?.error("CANCELLED", "User cancelled gallery", null)
                     pendingResult = null
                 }
@@ -314,23 +328,44 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
     }
 
     private fun handleGalleryResult(uri: Uri) {
+        android.util.Log.d("AttachmentPicker", "handleGalleryResult called with URI: $uri")
+        
         val activity = this.activity ?: run {
+            android.util.Log.e("AttachmentPicker", "Activity is null in handleGalleryResult")
             pendingResult?.error("NO_ACTIVITY", "Activity is null", null)
+            pendingResult = null
             return
         }
 
         try {
+            android.util.Log.d("AttachmentPicker", "Opening input stream for URI: $uri")
             val inputStream: InputStream? = activity.contentResolver.openInputStream(uri)
-            val file = File(activity.getExternalFilesDir(null), "gallery_${System.currentTimeMillis()}.jpg")
+            
+            if (inputStream == null) {
+                android.util.Log.e("AttachmentPicker", "Failed to open input stream for URI: $uri")
+                pendingResult?.error("ERROR", "Failed to open input stream", null)
+                pendingResult = null
+                return
+            }
+            
+            val externalFilesDir = activity.getExternalFilesDir(null)
+            android.util.Log.d("AttachmentPicker", "External files dir: $externalFilesDir")
+            
+            val file = File(externalFilesDir, "gallery_${System.currentTimeMillis()}.jpg")
+            android.util.Log.d("AttachmentPicker", "Creating file at: ${file.absolutePath}")
+            
             val outputStream = FileOutputStream(file)
 
-            inputStream?.use { input ->
+            inputStream.use { input ->
                 outputStream.use { output ->
-                    input.copyTo(output)
+                    val bytesCopied = input.copyTo(output)
+                    android.util.Log.d("AttachmentPicker", "Copied $bytesCopied bytes to file")
                 }
             }
 
             val fileSize = file.length()
+            android.util.Log.d("AttachmentPicker", "File size after copy: $fileSize bytes")
+            
             val cursor = activity.contentResolver.query(uri, null, null, null, null)
             var fileName = "image.jpg"
             cursor?.use {
@@ -338,17 +373,26 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
                     val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                     if (nameIndex != -1) {
                         fileName = it.getString(nameIndex)
+                        android.util.Log.d("AttachmentPicker", "Found file name from cursor: $fileName")
                     }
                 }
             }
 
-            pendingResult?.success(mapOf(
-                "filePath" to file.absolutePath,
+            val filePath = file.absolutePath
+            android.util.Log.d("AttachmentPicker", "Gallery image selected - File Path: $filePath")
+            android.util.Log.d("AttachmentPicker", "File Name: $fileName, Size: $fileSize bytes")
+            
+            val resultMap = mapOf(
+                "filePath" to filePath,
                 "fileName" to fileName,
                 "fileSize" to fileSize,
                 "mimeType" to "image/jpeg"
-            ))
+            )
+            android.util.Log.d("AttachmentPicker", "Sending success result: $resultMap")
+            
+            pendingResult?.success(resultMap)
         } catch (e: Exception) {
+            android.util.Log.e("AttachmentPicker", "Exception in handleGalleryResult: ${e.message}", e)
             pendingResult?.error("ERROR", "Failed to process gallery image: ${e.message}", null)
         }
         pendingResult = null
@@ -389,9 +433,12 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
             }
 
             val mimeType = activity.contentResolver.getType(uri) ?: "application/octet-stream"
+            val filePath = file.absolutePath
+            android.util.Log.d("AttachmentPicker", "Document selected - File Path: $filePath")
+            android.util.Log.d("AttachmentPicker", "File Name: $fileName, Size: ${file.length()} bytes, MIME: $mimeType")
 
             pendingResult?.success(mapOf(
-                "filePath" to file.absolutePath,
+                "filePath" to filePath,
                 "fileName" to fileName,
                 "fileSize" to file.length(),
                 "mimeType" to mimeType
@@ -455,9 +502,12 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
             }
 
             val mimeType = activity.contentResolver.getType(uri) ?: "audio/*"
+            val filePath = file.absolutePath
+            android.util.Log.d("AttachmentPicker", "Audio file selected - File Path: $filePath")
+            android.util.Log.d("AttachmentPicker", "File Name: $fileName, Size: ${file.length()} bytes, MIME: $mimeType")
 
             pendingResult?.success(mapOf(
-                "filePath" to file.absolutePath,
+                "filePath" to filePath,
                 "fileName" to fileName,
                 "fileSize" to file.length(),
                 "mimeType" to mimeType
@@ -502,7 +552,4 @@ class AttachmentPickerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, A
         return true
     }
 }
-
-
-
 
